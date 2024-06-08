@@ -1,25 +1,65 @@
 <script>
+import axios from "axios";
 import Parametres from "@/components/Parametres.vue";
 import Supprimer from "@/components/Supprimer.vue";
-
-  export default {
-    name:'Accueil',
-    components:{
-      Supprimer,
-      Parametres
+export default {
+  name: 'Accueil',
+  components:{
+    Supprimer,
+    Parametres
+  },
+  data() {
+    return {
+      showParametres: false,
+      firstname: '',
+      lastname: '',
+      color:'',
+      groupTitle: ''
+    }
+  },
+  methods: {
+    toggleParametres() {
+      this.showParametres = !this.showParametres;
     },
-    data() {
-      return {
-        showParametres: false
+    checkToken() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        this.$router.push('/');
       }
     },
-    methods: {
-      toggleParametres() {
-        this.showParametres = !this.showParametres;
+    async fetchUserData() {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.post('http://localhost:3001/api/user', { token });
+        const userData = response.data;
+        this.firstname = userData.firstname;
+        this.lastname = userData.lastname;
+        this.color = userData.color;
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    },
+    async createGroup() {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.post('http://localhost:3001/api/creategroupe', {
+          token: token,
+          title: this.groupTitle
+        });
+        console.log('Group created:', response.data);
+        // Ajoutez ici la logique pour traiter la réponse si nécessaire
+      } catch (error) {
+        console.error('Error creating group:', error);
       }
     }
+  },
+  created() {
+    this.checkToken();
+    this.fetchUserData();
   }
+}
 </script>
+
 
 <template>
 <!--  <Supprimer></Supprimer>-->
@@ -27,15 +67,18 @@ import Supprimer from "@/components/Supprimer.vue";
   <div class="flex w-full p-6 flex-col h-dvh bg-white gap-2 relative items-center overflow-y-hidden">
     <nav class="flex w-full p-4 px-6 justify-between items-center">
       <h1 class="">TeamTracker</h1>
-      <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer" @click="toggleParametres">HD</h1>
+      <h1 class="profil p-2 rounded-full cursor-pointer" :style="{ backgroundColor: color }" @click="toggleParametres">{{ firstname.charAt(0) }}{{ lastname.charAt(0) }}</h1>
     </nav>
     <hr class="w-full flex border-neutral-300">
     <div class="flex w-full flex-row  h-dvh">
       <div class="sidebar border-r flex w-full h-full p-6 flex-col">
-<!--        <div class="createGroup flex w-full flex-col gap-4">-->
-<!--          <input type="text" name="group" id="group" placeholder="Nom du groupe" class="flex w-full outline-0 p-4 rounded bg-neutral-100">-->
-<!--          <button class="bg-emerald-500 flex p-4 w-full items-center justify-center text-white rounded">Créer</button>-->
-<!--        </div>-->
+        <div class="createGroup flex w-full flex-col gap-4">
+          <input v-model="groupTitle" type="text" name="group" id="group" placeholder="Nom du groupe" class="flex w-full outline-0 p-4 rounded bg-neutral-100">
+          <button @click="createGroup" class="bg-emerald-500 flex p-4 w-full items-center justify-center text-white rounded">Créer</button>
+        </div>
+
+
+
         <div class="flex w-full flex-col h-full gap-4">
           <input type="text" name="group" id="group" placeholder="Nom" class="flex w-full outline-0 p-4 rounded bg-neutral-100">
           <div class="list flex w-full overflow-y-auto overflow-x-hidden gap-2 flex-col h-full">
@@ -134,17 +177,21 @@ import Supprimer from "@/components/Supprimer.vue";
           <button class="bg-emerald-500 flex p-4 w-full items-center justify-center text-white rounded">Ajouter</button>
           <button class="bg-red-500 flex p-4 w-full items-center justify-center text-white rounded">Supprimer le groupe</button>
         </div>
+
+
+
+
       </div>
       <div class="planning flex w-full h-full px-6 flex-col">
-        <div class="flex w-full flex-col gap-2">
-          <h1>Charles Peguy Marseille : Votre équipe</h1>
-          <div class="flex w-full mb-8 flex-wrap gap-4">
-            <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">HD</h1>
-            <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">LG</h1>
-            <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">BB</h1>
-            <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">DU</h1>
-          </div>
-        </div>
+<!--        <div class="flex w-full flex-col gap-2">-->
+<!--          <h1>Charles Peguy Marseille : Votre équipe</h1>-->
+<!--          <div class="flex w-full mb-8 flex-wrap gap-4">-->
+<!--            <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">HD</h1>-->
+<!--            <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">LG</h1>-->
+<!--            <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">BB</h1>-->
+<!--            <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">DU</h1>-->
+<!--          </div>-->
+<!--        </div>-->
         <table>
           <thead>
           <tr>
@@ -161,13 +208,13 @@ import Supprimer from "@/components/Supprimer.vue";
           <tbody>
           <tr>
             <td>08:00 - 09:00</td>
-            <td><button class="bg-emerald-500"></button></td>
-            <td><button class="bg-emerald-500"></button></td>
-            <td><button class="bg-emerald-500"></button></td>
             <td><button></button></td>
             <td><button></button></td>
-            <td><button class="bg-emerald-500"></button></td>
-            <td><button class="bg-emerald-500"></button></td>
+            <td><button></button></td>
+            <td><button></button></td>
+            <td><button></button></td>
+            <td><button></button></td>
+            <td><button></button></td>
           </tr>
           <tr>
             <td>09:00 - 10:00</td>
@@ -211,10 +258,10 @@ import Supprimer from "@/components/Supprimer.vue";
           </tr>
           <tr>
             <td>13:00 - 14:00</td>
-            <td><button class="bg-emerald-500"></button></td>
-            <td><button class="bg-emerald-500"></button></td>
-            <td><button class="bg-emerald-500"></button></td>
-            <td><button class="bg-emerald-500"></button></td>
+            <td><button></button></td>
+            <td><button></button></td>
+            <td><button></button></td>
+            <td><button></button></td>
             <td><button></button></td>
             <td><button></button></td>
             <td><button></button></td>
