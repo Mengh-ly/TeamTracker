@@ -97,6 +97,22 @@ export default {
             console.error('Erreur lors de la requête API checkleader', error);
           });
     },
+    async quitterGroupe() {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.post('http://localhost:3001/api/leavegroupe', { token });
+        console.log('Response from leaving group:', response.data);
+
+        // Mettez à jour votre vue après avoir quitté le groupe si nécessaire
+        this.isInGroup = false; // Par exemple, mettre à jour l'état local
+
+        // Réactualiser les données si nécessaire
+        // this.fetchUserData();
+        // this.fetchGroupData();
+      } catch (error) {
+        console.error('Error leaving group:', error);
+      }
+    },
   },
   mounted() {
     this.checkToken();
@@ -105,6 +121,7 @@ export default {
   }
 }
 </script>
+
 
 
 
@@ -129,7 +146,7 @@ export default {
 
         <div v-else class="flex w-full flex-col h-full gap-4">
 <!--          <input type="text" name="group" id="group" placeholder="Nom" class="flex w-full outline-0 p-4 rounded bg-neutral-100">-->
-          <div class="list flex w-full overflow-y-auto overflow-x-hidden gap-2 flex-col h-full">
+          <div v-if="isLeader" class="list flex w-full overflow-y-auto overflow-x-hidden gap-2 flex-col h-full">
             <div v-for="user in groupUsers" :key="user.id" class="embed flex w-full items-center justify-between p-2 border rounded">
               <div class="flex items-center gap-2">
                 <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">{{ user.firstname.charAt(0).toUpperCase() + user.lastname.charAt(0).toUpperCase() }}</h1>

@@ -33,6 +33,9 @@ app.use('/api/checkleader', checkleader);
 const deletegroupe = require('./routes/groupe/deletegroupe');
 app.use('/api/deletegroupe', deletegroupe);
 
+const leavegroupe = require('./routes/groupe/leavegroupe');
+app.use('/api/leavegroupe', leavegroupe);
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });

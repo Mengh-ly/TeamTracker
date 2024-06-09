@@ -10,7 +10,7 @@ router.post('/', async (req, res) => {
         const selectGroupIdQuery = 'SELECT id_Groupe FROM user WHERE token = ?';
         const [groupIdRows] = await db.query(selectGroupIdQuery, [token]);
 
-        if (groupIdRows.length === 0) {
+        if (!groupIdRows || groupIdRows.length === 0) {
             return res.status(404).json({ message: "Token non trouvé." });
         }
 
