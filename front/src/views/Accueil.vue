@@ -15,11 +15,13 @@ export default {
       firstname: '',
       lastname: '',
       color: '',
-      groupTitle: '',
+      groupTitle: '', // Titre du groupe
       isInGroup: false,
       usersWithoutGroup: [],
       groupUsers: [], // Stocker les utilisateurs du groupe
       isLeader: false,
+      title: '',
+      groupId: null, // Id du groupe actuel de l'utilisateur
     }
   },
   methods: {
@@ -32,6 +34,8 @@ export default {
         this.$router.push('/');
       }
     },
+
+    //Permet de récupérer les informations de l'user et de son groupe
     async fetchUserData() {
       try {
         const token = localStorage.getItem('token');
@@ -40,39 +44,56 @@ export default {
         this.firstname = userData.firstname;
         this.lastname = userData.lastname;
         this.color = userData.color;
-        this.id_Groupe = userData.id_Groupe;
+        this.groupId = userData.id_Groupe;
         this.isInGroup = !!userData.id_Groupe;
+        this.groupTitle = userData.title;
         if (this.isInGroup) {
           await this.fetchGroupData(); // Récupérer les utilisateurs du groupe
+          console.log(userData.title);
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
     },
+
+    // Permet d'afficher la boucle avec tout les users sans groupe
     async fetchGroupData() {
       try {
         const token = localStorage.getItem('token');
         const response = await axios.post('http://localhost:3001/api/checkgroupe', { token });
         console.log('Group data:', response.data); // Debug: afficher les données du groupe
         this.groupUsers = response.data; // Assurez-vous que la réponse contient une propriété `users`
-        console.log('Group users:', this.groupUsers); // Debug: afficher les utilisateurs du groupe
+
+        // Trouver le titre du groupe actuel de l'utilisateur
+        const userGroup = this.groupUsers.find(user => user.id === this.groupId);
+
       } catch (error) {
         console.error('Error fetching group data:', error);
       }
     },
-    async createGroup() {
+
+
+
+    async quitterGroupe() {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.post('http://localhost:3001/api/creategroupe', {
-          token: token,
-          title: this.groupTitle
-        });
-        console.log('Group created:', response.data);
-        // Ajoutez ici la logique pour traiter la réponse si nécessaire
+        const response = await axios.post('http://localhost:3001/api/leavegroupe', { token });
+        console.log('Response from leaving group:', response.data);
+
+        // Mettez à jour votre vue après avoir quitté le groupe
+        this.isInGroup = false; // Par exemple, mettre à jour l'état local
+        this.groupTitle = ''; // Réinitialiser le titre du groupe
+
+        // Réactualiser les données
+        await this.fetchUserData(); // Mettre à jour les informations de l'utilisateur
+        this.checkLeader(); // Vérifier le statut de leader
       } catch (error) {
-        console.error('Error creating group:', error);
+        console.error('Error leaving group:', error);
       }
     },
+
+
+
     checkLeader() {
       // Récupération du token depuis le local storage
       const token = localStorage.getItem('token');
@@ -97,23 +118,53 @@ export default {
             console.error('Erreur lors de la requête API checkleader', error);
           });
     },
-    async quitterGroupe() {
+
+    async createGroup() {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.post('http://localhost:3001/api/leavegroupe', { token });
-        console.log('Response from leaving group:', response.data);
+        const response = await axios.post('http://localhost:3001/api/creategroupe', {
+          token,
+          title: this.groupTitle
+        });
+        console.log('Response from creating group:', response.data);
 
-        // Mettez à jour votre vue après avoir quitté le groupe si nécessaire
-        this.isInGroup = false; // Par exemple, mettre à jour l'état local
+        // Mettre à jour l'état local après la création du groupe
+        this.isInGroup = true;
+        this.groupTitle = response.data.title; // Mettre à jour le titre du groupe
+        this.groupId = response.data.id; // Mettre à jour l'id du groupe
 
-        // Réactualiser les données si nécessaire
-        // this.fetchUserData();
-        // this.fetchGroupData();
+        // Réactualiser les données utilisateur
+        await this.fetchUserData();
+        this.checkLeader();
       } catch (error) {
-        console.error('Error leaving group:', error);
+        console.error('Error creating group:', error);
+      }
+    },
+
+
+
+    // Nouvelle méthode pour supprimer un groupe
+    async supprimerGroupe() {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.post('http://localhost:3001/api/deletegroupe', { token });
+        console.log('Response from deleting group:', response.data);
+
+        // Mettre à jour l'état local après la suppression
+        this.isInGroup = false;
+        this.groupTitle = '';
+        this.groupId = null;
+        this.groupUsers = [];
+
+        // Réactualiser les données utilisateur
+        await this.fetchUserData();
+        this.checkLeader();
+      } catch (error) {
+        console.error('Error deleting group:', error);
       }
     },
   },
+
   mounted() {
     this.checkToken();
     this.fetchUserData();
@@ -121,7 +172,6 @@ export default {
   }
 }
 </script>
-
 
 
 
@@ -169,15 +219,15 @@ export default {
 
       </div>
       <div class="planning flex w-full h-full px-6 flex-col">
-<!--        <div class="flex w-full flex-col gap-2">-->
-<!--          <h1>Charles Peguy Marseille : Votre équipe</h1>-->
-<!--          <div class="flex w-full mb-8 flex-wrap gap-4">-->
-<!--            <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">HD</h1>-->
-<!--            <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">LG</h1>-->
-<!--            <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">BB</h1>-->
-<!--            <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">DU</h1>-->
-<!--          </div>-->
-<!--        </div>-->
+        <div v-if="isInGroup" class="flex w-full flex-col gap-2">
+          <h1>{{ groupTitle }}</h1>
+          <div class="flex w-full mb-8 flex-wrap gap-4">
+            <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">HD</h1>
+            <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">LG</h1>
+            <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">BB</h1>
+            <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">DU</h1>
+          </div>
+        </div>
         <table>
           <thead>
           <tr>

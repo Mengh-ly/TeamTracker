@@ -1,19 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../../db'); // Assurez-vous que db est configuré pour se connecter à votre base de données
+const db = require('../../db');
 
 router.post('/', (req, res) => {
     const { token } = req.body;
 
-    // Ajoutez ici votre logique pour vérifier le token si nécessaire
+    const query = 'SELECT id, firstname, lastname, email FROM user WHERE id_Groupe IS NULL';
 
-    const query = 'SELECT id, firstname, lastname FROM user WHERE id_Groupe IS NULL';
-
-    db.query(query, (err, results) => {
-        if (err) {
-            return res.status(500).json({ error: 'Database query failed' });
+    db.query(query, (error, results) => {
+        if (error) {
+            console.error('Error executing query:', error);
+            return res.status(500).json({ error: 'Internal Server Error' });
         }
-
         res.status(200).json(results);
     });
 });

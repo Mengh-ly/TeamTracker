@@ -1,30 +1,47 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../../db');  // Assure-toi que ce chemin est correct
+const db = require('../../db');
 
-router.post('/', async (req, res) => {
+router.post('/', (req, res) => {
     const { token } = req.body;
 
-    try {
-        // Requête pour récupérer l'id_Groupe à partir du token
-        const selectGroupIdQuery = 'SELECT id_Groupe FROM user WHERE token = ?';
-        const [groupIdRows] = await db.query(selectGroupIdQuery, [token]);
+    // Validate token
+    if (!token) {
+        return res.status(400).json({ message: 'Token is required' });
+    }
 
-        if (!groupIdRows || groupIdRows.length === 0) {
-            return res.status(404).json({ message: "Token non trouvé." });
+    // Query database for user's id_Groupe
+    db.query('SELECT id_Groupe FROM User WHERE token = ?', [token], (error, results) => {
+        if (error) {
+            console.error('Error querying database:', error);
+            return res.status(500).json({ message: 'Internal server error' });
         }
 
-        const id_Groupe = groupIdRows[0].id_Groupe;
+        if (results.length === 0) {
+            return res.status(401).json({ message: 'Token incorrect' });
+        }
 
-        // Requête pour mettre à jour l'id_Groupe de tous les utilisateurs associés à l'id_Groupe récupéré à NULL
-        const updateUsersQuery = 'UPDATE user SET id_Groupe = NULL WHERE id_Groupe = ?';
-        await db.query(updateUsersQuery, [id_Groupe]);
+        const id_Groupe = results[0].id_Groupe;
 
-        res.status(200).json({ message: "Mise à jour réussie." });
-    } catch (error) {
-        console.error("Erreur lors de la mise à jour :", error);
-        res.status(500).json({ message: "Une erreur s'est produite lors de la mise à jour." });
-    }
+        // Update all users with the same id_Groupe to null
+        db.query('UPDATE User SET id_Groupe = NULL WHERE id_Groupe = ?', [id_Groupe], (error, updateResult) => {
+            if (error) {
+                console.error('Error updating id_Groupe:', error);
+                return res.status(500).json({ message: 'Internal server error' });
+            }
+
+            // Delete the group associated with the id_Groupe
+            db.query('DELETE FROM groupe WHERE id = ?', [id_Groupe], (error, deleteResult) => {
+                if (error) {
+                    console.error('Error deleting group:', error);
+                    return res.status(500).json({ message: 'Internal server error' });
+                }
+
+                // Return only the id_Groupe
+                res.json({ id_Groupe });
+            });
+        });
+    });
 });
 
 module.exports = router;
