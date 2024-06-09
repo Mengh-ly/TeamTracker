@@ -22,8 +22,7 @@ export default {
       isLeader: false,
       title: '',
       groupId: null, // Id du groupe actuel de l'utilisateur
-      membersInGroup: [],
-      planningData: []
+      membersInGroup: []
     }
   },
   methods: {
@@ -75,31 +74,15 @@ export default {
       }
     },
 
-    async checkPlanning(idPlanning) {
+    async getPlanning() {
       try {
-          token,
-          idPlanning
-        });
-        console.log('Response from checkplanning:', response.data);
+        const response = await axios.post('http://localhost:3001/api/getplanning');
+        console.log('Response from getplanning:', response.data);
 
-        // Mettre à jour les données de planning
-        this.planningData = response.data;
-
-        // Appeler la méthode pour mettre à jour les classes des boutons
-        this.updateButtonClasses();
+        // Faites quelque chose avec la réponse si nécessaire
       } catch (error) {
-        console.error('Error checking planning:', error);
+        console.error('Error fetching planning:', error);
       }
-    },
-
-    hasPlanning(id) {
-      // Vérifier si l'ID est présent dans planningData
-      return this.planningData.some(item => item.id === id);
-    },
-
-    updateButtonClasses() {
-      // Mettre à jour les classes des boutons
-      // Vous n'avez pas besoin de faire quelque chose ici directement si vous utilisez :class dans le template
     },
 
     async quitterGroupe() {
@@ -324,13 +307,13 @@ export default {
           <tbody>
           <tr>
             <td>08:00 - 09:00</td>
-            <td><button :class="{ 'bg-emerald-500': hasPlanning('lun08-09') }" @click="checkPlanning('lun08-09')"></button></td>
-            <td><button :class="{ 'bg-emerald-500': hasPlanning('mar08-09') }" @click="checkPlanning('mar08-09')"></button></td>
-            <td><button :class="{ 'bg-emerald-500': hasPlanning('mer08-09') }" @click="checkPlanning('mer08-09')"></button></td>
-            <td><button :class="{ 'bg-emerald-500': hasPlanning('jeu08-09') }" @click="checkPlanning('jeu08-09')"></button></td>
-            <td><button :class="{ 'bg-emerald-500': hasPlanning('ven08-09') }" @click="checkPlanning('ven08-09')"></button></td>
-            <td><button :class="{ 'bg-emerald-500': hasPlanning('sam08-09') }" @click="checkPlanning('sam08-09')"></button></td>
-            <td><button :class="{ 'bg-emerald-500': hasPlanning('dim08-09') }" @click="checkPlanning('dim08-09')"></button></td>
+            <td><button @click="checkPlanning('lun08-09')"></button></td>
+            <td><button @click="checkPlanning('mar08-09')"></button></td>
+            <td><button @click="checkPlanning('mer08-09')"></button></td>
+            <td><button @click="checkPlanning('jeu08-09')"></button></td>
+            <td><button @click="checkPlanning('ven08-09')"></button></td>
+            <td><button @click="checkPlanning('sam08-09')"></button></td>
+            <td><button @click="checkPlanning('dim08-09')"></button></td>
           </tr>
           <tr>
             <td>09:00 - 10:00</td>
