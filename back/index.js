@@ -24,6 +24,9 @@ app.use('/api/user', userGetData);
 const creategroupe = require('./routes/groupe/groupe');
 app.use('/api/creategroupe', creategroupe);
 
+const checkGroupe = require('./routes/user/checkGroupe');
+app.use('/api/checkgroupe', checkGroupe);
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });

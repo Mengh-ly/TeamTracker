@@ -14,7 +14,9 @@ export default {
       firstname: '',
       lastname: '',
       color:'',
-      groupTitle: ''
+      groupTitle: '',
+      isInGroup: false,
+      usersWithoutGroup: []
     }
   },
   methods: {
@@ -35,8 +37,21 @@ export default {
         this.firstname = userData.firstname;
         this.lastname = userData.lastname;
         this.color = userData.color;
+        this.id_Groupe = userData.id_Groupe;
+        this.isInGroup = !!userData.id_Groupe;
+        if (this.isInGroup) {
+          await this.fetchUsersWithoutGroup();  // Récupérer les utilisateurs sans groupe
+        }
       } catch (error) {
         console.error('Error fetching user data:', error);
+      }
+    },
+    async fetchUsersWithoutGroup() {
+      try {
+        const response = await axios.get('http://localhost:3001/api/checkgroupe');
+        this.usersWithoutGroup = response.data;
+      } catch (error) {
+        console.error('Error fetching users without group:', error);
       }
     },
     async createGroup() {
@@ -53,7 +68,7 @@ export default {
       }
     }
   },
-  created() {
+  mounted() {
     this.checkToken();
     this.fetchUserData();
   }
@@ -72,106 +87,29 @@ export default {
     <hr class="w-full flex border-neutral-300">
     <div class="flex w-full flex-row  h-dvh">
       <div class="sidebar border-r flex w-full h-full p-6 flex-col">
-        <div class="createGroup flex w-full flex-col gap-4">
+        <div v-if="!isInGroup" class="createGroup flex w-full flex-col gap-4">
           <input v-model="groupTitle" type="text" name="group" id="group" placeholder="Nom du groupe" class="flex w-full outline-0 p-4 rounded bg-neutral-100">
           <button @click="createGroup" class="bg-emerald-500 flex p-4 w-full items-center justify-center text-white rounded">Créer</button>
         </div>
 
 
 
-        <div class="flex w-full flex-col h-full gap-4">
+        <div v-else class="flex w-full flex-col h-full gap-4">
           <input type="text" name="group" id="group" placeholder="Nom" class="flex w-full outline-0 p-4 rounded bg-neutral-100">
           <div class="list flex w-full overflow-y-auto overflow-x-hidden gap-2 flex-col h-full">
-            <div class="embed flex w-full items-center justify-between p-2 border rounded">
+            <div v-for="user in usersWithoutGroup" :key="user.id" class="embed flex w-full items-center justify-between p-2 border rounded">
               <div class="flex items-center gap-2">
-                <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">HD</h1>
-                <span>Hervé Duong</span>
+                <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">{{ user.initials }}</h1>
+                <span>{{ user.lastname }} {{ user.firstname }}</span>
               </div>
-              <button class="bg-emerald-500 p-2 rounded text-white"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-plus"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg></button>
-            </div>
-            <div class="embed flex w-full items-center justify-between p-2 border rounded">
-              <div class="flex items-center gap-2">
-                <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">HD</h1>
-                <span>Hervé Duong</span>
-              </div>
-              <button class="bg-emerald-500 p-2 rounded text-white"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-plus"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg></button>
-            </div>
-            <div class="embed flex w-full items-center justify-between p-2 border rounded">
-              <div class="flex items-center gap-2">
-                <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">HD</h1>
-                <span>Hervé Duong</span>
-              </div>
-              <button class="bg-emerald-500 p-2 rounded text-white"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-plus"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg></button>
-            </div>
-            <div class="embed flex w-full items-center justify-between p-2 border rounded">
-              <div class="flex items-center gap-2">
-                <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">HD</h1>
-                <span>Hervé Duong</span>
-              </div>
-              <button class="bg-emerald-500 p-2 rounded text-white"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-plus"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg></button>
-            </div>
-            <div class="embed flex w-full items-center justify-between p-2 border rounded">
-              <div class="flex items-center gap-2">
-                <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">HD</h1>
-                <span>Hervé Duong</span>
-              </div>
-              <button class="bg-emerald-500 p-2 rounded text-white"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-plus"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg></button>
-            </div>
-            <div class="embed flex w-full items-center justify-between p-2 border rounded">
-              <div class="flex items-center gap-2">
-                <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">HD</h1>
-                <span>Hervé Duong</span>
-              </div>
-              <button class="bg-emerald-500 p-2 rounded text-white"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-plus"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg></button>
-            </div>
-            <div class="embed flex w-full items-center justify-between p-2 border rounded">
-              <div class="flex items-center gap-2">
-                <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">HD</h1>
-                <span>Hervé Duong</span>
-              </div>
-              <button class="bg-emerald-500 p-2 rounded text-white"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-plus"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg></button>
-            </div>
-            <div class="embed flex w-full items-center justify-between p-2 border rounded">
-              <div class="flex items-center gap-2">
-                <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">HD</h1>
-                <span>Hervé Duong</span>
-              </div>
-              <button class="bg-emerald-500 p-2 rounded text-white"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-plus"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg></button>
-            </div>
-            <div class="embed flex w-full items-center justify-between p-2 border rounded">
-              <div class="flex items-center gap-2">
-                <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">HD</h1>
-                <span>Hervé Duong</span>
-              </div>
-              <button class="bg-emerald-500 p-2 rounded text-white"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-plus"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg></button>
-            </div>
-            <div class="embed flex w-full items-center justify-between p-2 border rounded">
-              <div class="flex items-center gap-2">
-                <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">HD</h1>
-                <span>Hervé Duong</span>
-              </div>
-              <button class="bg-emerald-500 p-2 rounded text-white"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-plus"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg></button>
-            </div>
-            <div class="embed flex w-full items-center justify-between p-2 border rounded">
-              <div class="flex items-center gap-2">
-                <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">HD</h1>
-                <span>Hervé Duong</span>
-              </div>
-              <button class="bg-emerald-500 p-2 rounded text-white"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-plus"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg></button>
-            </div>
-            <div class="embed flex w-full items-center justify-between p-2 border rounded">
-              <div class="flex items-center gap-2">
-                <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">HD</h1>
-                <span>Hervé Duong</span>
-              </div>
-              <button class="bg-emerald-500 p-2 rounded text-white"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-plus"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg></button>
-            </div>
-            <div class="embed flex w-full items-center justify-between p-2 border rounded">
-              <div class="flex items-center gap-2">
-                <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">HD</h1>
-                <span>Hervé Duong</span>
-              </div>
-              <button class="bg-emerald-500 p-2 rounded text-white"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-plus"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg></button>
+              <button class="bg-emerald-500 p-2 rounded text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-plus">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <line x1="19" x2="19" y1="8" y2="14"/>
+                  <line x1="22" x2="16" y1="11" y2="11"/>
+                </svg>
+              </button>
             </div>
           </div>
           <button class="bg-emerald-500 flex p-4 w-full items-center justify-center text-white rounded">Ajouter</button>
@@ -331,7 +269,7 @@ export default {
   }
 
   .list{
-    max-height: 500px;
+    max-height: 450px;
   }
 
   .profil{
