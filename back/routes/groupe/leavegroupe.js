@@ -8,10 +8,10 @@ router.post('/', async (req, res) => {
     try {
         // Requête SQL pour mettre à jour id_Groupe à NULL
         const updateQuery = `
-UPDATE user
-SET id_Groupe = NULL
-WHERE token = ?;
-`;
+        UPDATE user
+        SET id_Groupe = NULL
+        WHERE token = ?;
+        `;
 
         // Exécution de la requête SQL avec le token
         await db.query(updateQuery, [token]);

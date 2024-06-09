@@ -22,6 +22,7 @@ export default {
       isLeader: false,
       title: '',
       groupId: null, // Id du groupe actuel de l'utilisateur
+      membersInGroup: []
     }
   },
   methods: {
@@ -34,6 +35,36 @@ export default {
         this.$router.push('/');
       }
     },
+
+    async fetchMemberGroupeData() {
+      try {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+          console.error('No token found in localStorage.');
+          return;
+        }
+
+        const data = { token };
+        const url = 'http://localhost:3001/api/membregroupe';
+
+        const response = await axios.post(url, data);
+        console.log('Members in group:', response.data); // Debug: afficher les membres du groupe
+
+        // Assurez-vous que la réponse contient une propriété `members`
+        if (response.data.members) {
+          this.membersInGroup = response.data.members;
+        } else {
+          console.error('Response data does not contain members property:', response.data);
+        }
+
+      } catch (error) {
+        console.error('Error fetching member data:', error);
+      }
+    },
+
+
+
 
     //Permet de récupérer les informations de l'user et de son groupe
     async fetchUserData() {
@@ -169,6 +200,7 @@ export default {
     this.checkToken();
     this.fetchUserData();
     this.checkLeader();
+    this.fetchMemberGroupeData();
   }
 }
 </script>
@@ -221,12 +253,12 @@ export default {
       <div class="planning flex w-full h-full px-6 flex-col">
         <div v-if="isInGroup" class="flex w-full flex-col gap-2">
           <h1>{{ groupTitle }}</h1>
-          <div class="flex w-full mb-8 flex-wrap gap-4">
-            <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">HD</h1>
-            <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">LG</h1>
-            <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">BB</h1>
-            <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">DU</h1>
+          <div v-for="(member, index) in membersInGroup" :key="index" class="member-item flex w-full mb-8 flex-wrap gap-4">
+            <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">
+              {{ member.name.substring(0, 2).toUpperCase() }}
+            </h1>
           </div>
+
         </div>
         <table>
           <thead>
