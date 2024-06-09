@@ -48,6 +48,9 @@ app.use('/api/checkplanning', checkPlanning);
 const getPlanning = require('./routes/planning/getPlanning');
 app.use('/api/getplanning', getPlanning);
 
+const addUser = require('./routes/user/addUser');
+app.use('/api/adduser', addUser);
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });

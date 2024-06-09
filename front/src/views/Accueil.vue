@@ -190,13 +190,28 @@ export default {
           idPlanning
         });
         console.log('Response from checkplanning:', response.data);
-
+        location.reload()
         // Faites quelque chose avec la réponse si nécessaire
       } catch (error) {
         console.error('Error checking planning:', error);
       }
     },
 
+    async addUserToGroup(idUser) {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.post('http://localhost:3001/api/adduser', {
+          token,
+          idUser
+        });
+        console.log('Response from adduser:', response.data);
+        location.reload()
+        // Réactualiser les données utilisateur après l'ajout de l'utilisateur
+        await this.fetchGroupData();
+      } catch (error) {
+        console.error('Error adding user to group:', error);
+      }
+    },
 
     async fetchMemberGroupeData() {
       try {
@@ -249,6 +264,7 @@ export default {
       <h1 class="">TeamTracker</h1>
       <h1 class="profil p-2 rounded-full cursor-pointer" :style="{ backgroundColor: color }" @click="toggleParametres">{{ firstname.charAt(0) }}{{ lastname.charAt(0) }}</h1>
     </nav>
+
     <hr class="w-full flex border-neutral-300">
     <div class="flex w-full flex-row  h-dvh">
       <div class="sidebar border-r flex w-full h-full p-6 flex-col">
@@ -267,7 +283,7 @@ export default {
                 <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">{{ user.firstname.charAt(0).toUpperCase() + user.lastname.charAt(0).toUpperCase() }}</h1>
                 <span>{{ user.firstname }} {{ user.lastname }}</span>
               </div>
-              <button class="bg-emerald-500 p-2 rounded text-white">
+              <button @click="addUserToGroup(user.id)" class="bg-emerald-500 p-2 rounded text-white">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user-plus">
                   <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/>
                 </svg>
@@ -298,7 +314,7 @@ export default {
     </div>
   </div>
         </div>
-        <table>
+        <table v-if="isInGroup">
           <thead>
           <tr>
             <th>Heure</th>
