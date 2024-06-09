@@ -27,6 +27,12 @@ app.use('/api/creategroupe', creategroupe);
 const checkGroupe = require('./routes/user/checkGroupe');
 app.use('/api/checkgroupe', checkGroupe);
 
+const checkleader = require('./routes/groupe/checkleader');
+app.use('/api/checkleader', checkleader);
+
+const deletegroupe = require('./routes/groupe/deletegroupe');
+app.use('/api/deletegroupe', deletegroupe);
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });

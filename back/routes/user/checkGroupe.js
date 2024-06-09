@@ -7,7 +7,7 @@ router.post('/', (req, res) => {
 
     // Ajoutez ici votre logique pour vérifier le token si nécessaire
 
-    const query = 'SELECT * FROM user WHERE id_Groupe IS NULL';
+    const query = 'SELECT id, firstname, lastname FROM user WHERE id_Groupe IS NULL';
 
     db.query(query, (err, results) => {
         if (err) {

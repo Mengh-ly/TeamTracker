@@ -2,9 +2,10 @@
 import axios from "axios";
 import Parametres from "@/components/Parametres.vue";
 import Supprimer from "@/components/Supprimer.vue";
+
 export default {
   name: 'Accueil',
-  components:{
+  components: {
     Supprimer,
     Parametres
   },
@@ -13,10 +14,12 @@ export default {
       showParametres: false,
       firstname: '',
       lastname: '',
-      color:'',
+      color: '',
       groupTitle: '',
       isInGroup: false,
-      usersWithoutGroup: []
+      usersWithoutGroup: [],
+      groupUsers: [], // Stocker les utilisateurs du groupe
+      isLeader: false,
     }
   },
   methods: {
@@ -40,18 +43,21 @@ export default {
         this.id_Groupe = userData.id_Groupe;
         this.isInGroup = !!userData.id_Groupe;
         if (this.isInGroup) {
-          await this.fetchUsersWithoutGroup();  // Récupérer les utilisateurs sans groupe
+          await this.fetchGroupData(); // Récupérer les utilisateurs du groupe
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
     },
-    async fetchUsersWithoutGroup() {
+    async fetchGroupData() {
       try {
-        const response = await axios.get('http://localhost:3001/api/checkgroupe');
-        this.usersWithoutGroup = response.data;
+        const token = localStorage.getItem('token');
+        const response = await axios.post('http://localhost:3001/api/checkgroupe', { token });
+        console.log('Group data:', response.data); // Debug: afficher les données du groupe
+        this.groupUsers = response.data; // Assurez-vous que la réponse contient une propriété `users`
+        console.log('Group users:', this.groupUsers); // Debug: afficher les utilisateurs du groupe
       } catch (error) {
-        console.error('Error fetching users without group:', error);
+        console.error('Error fetching group data:', error);
       }
     },
     async createGroup() {
@@ -66,14 +72,41 @@ export default {
       } catch (error) {
         console.error('Error creating group:', error);
       }
-    }
+    },
+    checkLeader() {
+      // Récupération du token depuis le local storage
+      const token = localStorage.getItem('token');
+
+      // Vérification si le token existe
+      if (!token) {
+        console.error('Token non trouvé dans le local storage');
+        return;
+      }
+
+      // Envoi de la requête POST vers l'API
+      axios.post('http://localhost:3001/api/checkleader', { token })
+          .then(response => {
+            // Vérification de la réponse de l'API
+            if (response.data.leader === 'oui') {
+              this.isLeader = true;
+            } else {
+              this.isLeader = false;
+            }
+          })
+          .catch(error => {
+            console.error('Erreur lors de la requête API checkleader', error);
+          });
+    },
   },
   mounted() {
     this.checkToken();
     this.fetchUserData();
+    this.checkLeader();
   }
 }
 </script>
+
+
 
 
 <template>
@@ -95,25 +128,23 @@ export default {
 
 
         <div v-else class="flex w-full flex-col h-full gap-4">
-          <input type="text" name="group" id="group" placeholder="Nom" class="flex w-full outline-0 p-4 rounded bg-neutral-100">
+<!--          <input type="text" name="group" id="group" placeholder="Nom" class="flex w-full outline-0 p-4 rounded bg-neutral-100">-->
           <div class="list flex w-full overflow-y-auto overflow-x-hidden gap-2 flex-col h-full">
-            <div v-for="user in usersWithoutGroup" :key="user.id" class="embed flex w-full items-center justify-between p-2 border rounded">
+            <div v-for="user in groupUsers" :key="user.id" class="embed flex w-full items-center justify-between p-2 border rounded">
               <div class="flex items-center gap-2">
-                <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">{{ user.initials }}</h1>
-                <span>{{ user.lastname }} {{ user.firstname }}</span>
+                <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">{{ user.firstname.charAt(0).toUpperCase() + user.lastname.charAt(0).toUpperCase() }}</h1>
+                <span>{{ user.firstname }} {{ user.lastname }}</span>
               </div>
               <button class="bg-emerald-500 p-2 rounded text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-plus">
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                  <circle cx="9" cy="7" r="4"/>
-                  <line x1="19" x2="19" y1="8" y2="14"/>
-                  <line x1="22" x2="16" y1="11" y2="11"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user-plus">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/>
                 </svg>
               </button>
             </div>
           </div>
-          <button class="bg-emerald-500 flex p-4 w-full items-center justify-center text-white rounded">Ajouter</button>
-          <button class="bg-red-500 flex p-4 w-full items-center justify-center text-white rounded">Supprimer le groupe</button>
+
+          <button v-if="isLeader" @click="supprimerGroupe" class="bg-red-500 flex p-4 w-full items-center justify-center text-white rounded">Supprimer le groupe</button>
+          <button v-else @click="quitterGroupe" class="bg-red-500 flex p-4 w-full items-center justify-center text-white rounded">Quitter le groupe</button>
         </div>
 
 
