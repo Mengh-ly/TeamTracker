@@ -165,7 +165,6 @@ export default {
         console.error('Error deleting group:', error);
       }
     },
-
     async fetchMemberGroupeData() {
       try {
         const token = localStorage.getItem('token');
@@ -182,21 +181,20 @@ export default {
         this.membersInGroup = [];
 
         const response = await axios.post(url, data);
-        console.log('Members in group:', response.data); // Debug: afficher les membres du groupe
+        console.log('Response from API:', response.data); // Debug: afficher la réponse complète de l'API
 
-        // Assurez-vous que la réponse contient une propriété `members`
-        if (response.data.members) {
-          console.log('Members data:', response.data.members);
-          this.membersInGroup = response.data.members;
+        // Assurez-vous que la réponse est un tableau de membres
+        if (Array.isArray(response.data)) {
+          console.log('Members data:', response.data);
+          this.membersInGroup = response.data;
         } else {
-          console.error('Response data does not contain members property:', response.data);
+          console.error('Response data is not an array:', response.data);
         }
       } catch (error) {
         console.error('Error fetching member data:', error);
       }
     },
   },
-
   mounted() {
     this.checkToken();
     this.fetchUserData();
@@ -251,21 +249,20 @@ export default {
 
 
       </div>
+      
       <div class="planning flex w-full h-full px-6 flex-col">
         <div v-if="isInGroup" class="flex w-full flex-col gap-2">
           <h1>{{ groupTitle }}</h1>
-          <div v-if="membersInGroup && membersInGroup.length > 0">
-            <div v-for="member in membersInGroup" :key="member.id" class="member-item flex w-full mb-8 flex-wrap gap-4">
-              <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">
-                {{ member.username.substring(0, 2).toUpperCase() }}
-              </h1>
-            </div>
-          </div>
-          <div v-else>
-            Chargement en cours...
-          </div>
-
-
+          <div>
+            <div class="member-item flex w-full mb-8 flex-wrap gap-4">
+      <h1 v-for="member in membersInGroup" :key="member.id"  :style="{ backgroundColor: member.color }" class="profil  p-2 rounded-full cursor-pointer">
+        {{ member.username }}
+      </h1>
+    </div>
+    <div v-if="membersInGroup.length === 0">
+      <p>Aucun membre trouvé.</p>
+    </div>
+  </div>
         </div>
         <table>
           <thead>
