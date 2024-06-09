@@ -22,7 +22,9 @@ export default {
       isLeader: false,
       title: '',
       groupId: null, // Id du groupe actuel de l'utilisateur
-      membersInGroup: []
+      membersInGroup: [],
+      planningData: [] // Initialize as an empty array
+
     }
   },
   methods: {
@@ -78,13 +80,18 @@ export default {
       try {
         const response = await axios.post('http://localhost:3001/api/getplanning');
         console.log('Response from getplanning:', response.data);
-
-        // Faites quelque chose avec la réponse si nécessaire
+        this.planningData = response.data;
       } catch (error) {
         console.error('Error fetching planning:', error);
       }
     },
-
+    checkPlanning(id) {
+      // Your existing logic for checkPlanning
+    },
+    getButtonStyle(id) {
+      const planningItem = this.planningData.find(item => item.id === id);
+      return planningItem ? { backgroundColor: planningItem.color } : {};
+    },
     async quitterGroupe() {
       try {
         const token = localStorage.getItem('token');
@@ -305,106 +312,106 @@ export default {
           </tr>
           </thead>
           <tbody>
-          <tr>
-            <td>08:00 - 09:00</td>
-            <td><button @click="checkPlanning('lun08-09')"></button></td>
-            <td><button @click="checkPlanning('mar08-09')"></button></td>
-            <td><button @click="checkPlanning('mer08-09')"></button></td>
-            <td><button @click="checkPlanning('jeu08-09')"></button></td>
-            <td><button @click="checkPlanning('ven08-09')"></button></td>
-            <td><button @click="checkPlanning('sam08-09')"></button></td>
-            <td><button @click="checkPlanning('dim08-09')"></button></td>
-          </tr>
-          <tr>
-            <td>09:00 - 10:00</td>
-            <td><button @click="checkPlanning('lun09-10')"></button></td>
-            <td><button @click="checkPlanning('mar09-10')"></button></td>
-            <td><button @click="checkPlanning('mer09-10')"></button></td>
-            <td><button @click="checkPlanning('jeu09-10')"></button></td>
-            <td><button @click="checkPlanning('ven09-10')"></button></td>
-            <td><button @click="checkPlanning('sam09-10')"></button></td>
-            <td><button @click="checkPlanning('dim09-10')"></button></td>
-          </tr>
-          <tr>
-            <td>10:00 - 11:00</td>
-            <td><button @click="checkPlanning('lun10-11')"></button></td>
-            <td><button @click="checkPlanning('mar10-11')"></button></td>
-            <td><button @click="checkPlanning('mer10-11')"></button></td>
-            <td><button @click="checkPlanning('jeu10-11')"></button></td>
-            <td><button @click="checkPlanning('ven10-11')"></button></td>
-            <td><button @click="checkPlanning('sam10-11')"></button></td>
-            <td><button @click="checkPlanning('dim10-11')"></button></td>
-          </tr>
-          <tr>
-            <td>11:00 - 12:00</td>
-            <td><button @click="checkPlanning('lun11-12')"></button></td>
-            <td><button @click="checkPlanning('mar11-12')"></button></td>
-            <td><button @click="checkPlanning('mer11-12')"></button></td>
-            <td><button @click="checkPlanning('jeu11-12')"></button></td>
-            <td><button @click="checkPlanning('ven11-12')"></button></td>
-            <td><button @click="checkPlanning('sam11-12')"></button></td>
-            <td><button @click="checkPlanning('dim11-12')"></button></td>
-          </tr>
-          <tr>
-            <td>12:00 - 13:00</td>
-            <td><button @click="checkPlanning('lun12-13')"></button></td>
-            <td><button @click="checkPlanning('mar12-13')"></button></td>
-            <td><button @click="checkPlanning('mer12-13')"></button></td>
-            <td><button @click="checkPlanning('jeu12-13')"></button></td>
-            <td><button @click="checkPlanning('ven12-13')"></button></td>
-            <td><button @click="checkPlanning('sam12-13')"></button></td>
-            <td><button @click="checkPlanning('dim12-13')"></button></td>
-          </tr>
-          <tr>
-            <td>13:00 - 14:00</td>
-            <td><button @click="checkPlanning('lun13-14')"></button></td>
-            <td><button @click="checkPlanning('mar13-14')"></button></td>
-            <td><button @click="checkPlanning('mer13-14')"></button></td>
-            <td><button @click="checkPlanning('jeu13-14')"></button></td>
-            <td><button @click="checkPlanning('ven13-14')"></button></td>
-            <td><button @click="checkPlanning('sam13-14')"></button></td>
-            <td><button @click="checkPlanning('dim13-14')"></button></td>
-          </tr>
-          <tr>
-            <td>14:00 - 15:00</td>
-            <td><button @click="checkPlanning('lun14-15')"></button></td>
-            <td><button @click="checkPlanning('mar14-15')"></button></td>
-            <td><button @click="checkPlanning('mer14-15')"></button></td>
-            <td><button @click="checkPlanning('jeu14-15')"></button></td>
-            <td><button @click="checkPlanning('ven14-15')"></button></td>
-            <td><button @click="checkPlanning('sam14-15')"></button></td>
-            <td><button @click="checkPlanning('dim14-15')"></button></td>
-          </tr>
-          <tr>
-            <td>15:00 - 16:00</td>
-            <td><button @click="checkPlanning('lun15-16')"></button></td>
-            <td><button @click="checkPlanning('mar15-16')"></button></td>
-            <td><button @click="checkPlanning('mer15-16')"></button></td>
-            <td><button @click="checkPlanning('jeu15-16')"></button></td>
-            <td><button @click="checkPlanning('ven15-16')"></button></td>
-            <td><button @click="checkPlanning('sam15-16')"></button></td>
-            <td><button @click="checkPlanning('dim15-16')"></button></td>
-          </tr>
-          <tr>
-            <td>16:00 - 17:00</td>
-            <td><button @click="checkPlanning('lun16-17')"></button></td>
-            <td><button @click="checkPlanning('mar16-17')"></button></td>
-            <td><button @click="checkPlanning('mer16-17')"></button></td>
-            <td><button @click="checkPlanning('jeu16-17')"></button></td>
-            <td><button @click="checkPlanning('ven16-17')"></button></td>
-            <td><button @click="checkPlanning('sam16-17')"></button></td>
-            <td><button @click="checkPlanning('dim16-17')"></button></td>
-          </tr>
-          <tr>
-            <td>17:00 - 18:00</td>
-            <td><button @click="checkPlanning('lun17-18')"></button></td>
-            <td><button @click="checkPlanning('mar17-18')"></button></td>
-            <td><button @click="checkPlanning('mer17-18')"></button></td>
-            <td><button @click="checkPlanning('jeu17-18')"></button></td>
-            <td><button @click="checkPlanning('ven17-18')"></button></td>
-            <td><button @click="checkPlanning('sam17-18')"></button></td>
-            <td><button @click="checkPlanning('dim17-18')"></button></td>
-          </tr>
+              <tr>
+      <td>08:00 - 09:00</td>
+      <td><button :style="getButtonStyle('lun08-09')" @click="checkPlanning('lun08-09')"></button></td>
+      <td><button :style="getButtonStyle('mar08-09')" @click="checkPlanning('mar08-09')"></button></td>
+      <td><button :style="getButtonStyle('mer08-09')" @click="checkPlanning('mer08-09')"></button></td>
+      <td><button :style="getButtonStyle('jeu08-09')" @click="checkPlanning('jeu08-09')"></button></td>
+      <td><button :style="getButtonStyle('ven08-09')" @click="checkPlanning('ven08-09')"></button></td>
+      <td><button :style="getButtonStyle('sam08-09')" @click="checkPlanning('sam08-09')"></button></td>
+      <td><button :style="getButtonStyle('dim08-09')" @click="checkPlanning('dim08-09')"></button></td>
+    </tr>
+    <tr>
+      <td>09:00 - 10:00</td>
+      <td><button :style="getButtonStyle('lun09-10')" @click="checkPlanning('lun09-10')"></button></td>
+      <td><button :style="getButtonStyle('mar09-10')" @click="checkPlanning('mar09-10')"></button></td>
+      <td><button :style="getButtonStyle('mer09-10')" @click="checkPlanning('mer09-10')"></button></td>
+      <td><button :style="getButtonStyle('jeu09-10')" @click="checkPlanning('jeu09-10')"></button></td>
+      <td><button :style="getButtonStyle('ven09-10')" @click="checkPlanning('ven09-10')"></button></td>
+      <td><button :style="getButtonStyle('sam09-10')" @click="checkPlanning('sam09-10')"></button></td>
+      <td><button :style="getButtonStyle('dim09-10')" @click="checkPlanning('dim09-10')"></button></td>
+    </tr>
+    <tr>
+      <td>10:00 - 11:00</td>
+      <td><button :style="getButtonStyle('lun10-11')" @click="checkPlanning('lun10-11')"></button></td>
+      <td><button :style="getButtonStyle('mar10-11')" @click="checkPlanning('mar10-11')"></button></td>
+      <td><button :style="getButtonStyle('mer10-11')" @click="checkPlanning('mer10-11')"></button></td>
+      <td><button :style="getButtonStyle('jeu10-11')" @click="checkPlanning('jeu10-11')"></button></td>
+      <td><button :style="getButtonStyle('ven10-11')" @click="checkPlanning('ven10-11')"></button></td>
+      <td><button :style="getButtonStyle('sam10-11')" @click="checkPlanning('sam10-11')"></button></td>
+      <td><button :style="getButtonStyle('dim10-11')" @click="checkPlanning('dim10-11')"></button></td>
+    </tr>
+    <tr>
+      <td>11:00 - 12:00</td>
+      <td><button :style="getButtonStyle('lun11-12')" @click="checkPlanning('lun11-12')"></button></td>
+      <td><button :style="getButtonStyle('mar11-12')" @click="checkPlanning('mar11-12')"></button></td>
+      <td><button :style="getButtonStyle('mer11-12')" @click="checkPlanning('mer11-12')"></button></td>
+      <td><button :style="getButtonStyle('jeu11-12')" @click="checkPlanning('jeu11-12')"></button></td>
+      <td><button :style="getButtonStyle('ven11-12')" @click="checkPlanning('ven11-12')"></button></td>
+      <td><button :style="getButtonStyle('sam11-12')" @click="checkPlanning('sam11-12')"></button></td>
+      <td><button :style="getButtonStyle('dim11-12')" @click="checkPlanning('dim11-12')"></button></td>
+    </tr>
+    <tr>
+      <td>12:00 - 13:00</td>
+      <td><button :style="getButtonStyle('lun12-13')" @click="checkPlanning('lun12-13')"></button></td>
+      <td><button :style="getButtonStyle('mar12-13')" @click="checkPlanning('mar12-13')"></button></td>
+      <td><button :style="getButtonStyle('mer12-13')" @click="checkPlanning('mer12-13')"></button></td>
+      <td><button :style="getButtonStyle('jeu12-13')" @click="checkPlanning('jeu12-13')"></button></td>
+      <td><button :style="getButtonStyle('ven12-13')" @click="checkPlanning('ven12-13')"></button></td>
+      <td><button :style="getButtonStyle('sam12-13')" @click="checkPlanning('sam12-13')"></button></td>
+      <td><button :style="getButtonStyle('dim12-13')" @click="checkPlanning('dim12-13')"></button></td>
+    </tr>
+    <tr>
+      <td>13:00 - 14:00</td>
+      <td><button :style="getButtonStyle('lun13-14')" @click="checkPlanning('lun13-14')"></button></td>
+      <td><button :style="getButtonStyle('mar13-14')" @click="checkPlanning('mar13-14')"></button></td>
+      <td><button :style="getButtonStyle('mer13-14')" @click="checkPlanning('mer13-14')"></button></td>
+      <td><button :style="getButtonStyle('jeu13-14')" @click="checkPlanning('jeu13-14')"></button></td>
+      <td><button :style="getButtonStyle('ven13-14')" @click="checkPlanning('ven13-14')"></button></td>
+      <td><button :style="getButtonStyle('sam13-14')" @click="checkPlanning('sam13-14')"></button></td>
+      <td><button :style="getButtonStyle('dim13-14')" @click="checkPlanning('dim13-14')"></button></td>
+    </tr>
+    <tr>
+      <td>14:00 - 15:00</td>
+      <td><button :style="getButtonStyle('lun14-15')" @click="checkPlanning('lun14-15')"></button></td>
+      <td><button :style="getButtonStyle('mar14-15')" @click="checkPlanning('mar14-15')"></button></td>
+      <td><button :style="getButtonStyle('mer14-15')" @click="checkPlanning('mer14-15')"></button></td>
+      <td><button :style="getButtonStyle('jeu14-15')" @click="checkPlanning('jeu14-15')"></button></td>
+      <td><button :style="getButtonStyle('ven14-15')" @click="checkPlanning('ven14-15')"></button></td>
+      <td><button :style="getButtonStyle('sam14-15')" @click="checkPlanning('sam14-15')"></button></td>
+      <td><button :style="getButtonStyle('dim14-15')" @click="checkPlanning('dim14-15')"></button></td>
+    </tr>
+    <tr>
+      <td>15:00 - 16:00</td>
+      <td><button :style="getButtonStyle('lun15-16')" @click="checkPlanning('lun15-16')"></button></td>
+      <td><button :style="getButtonStyle('mar15-16')" @click="checkPlanning('mar15-16')"></button></td>
+      <td><button :style="getButtonStyle('mer15-16')" @click="checkPlanning('mer15-16')"></button></td>
+      <td><button :style="getButtonStyle('jeu15-16')" @click="checkPlanning('jeu15-16')"></button></td>
+      <td><button :style="getButtonStyle('ven15-16')" @click="checkPlanning('ven15-16')"></button></td>
+      <td><button :style="getButtonStyle('sam15-16')" @click="checkPlanning('sam15-16')"></button></td>
+      <td><button :style="getButtonStyle('dim15-16')" @click="checkPlanning('dim15-16')"></button></td>
+    </tr>
+    <tr>
+      <td>16:00 - 17:00</td>
+      <td><button :style="getButtonStyle('lun16-17')" @click="checkPlanning('lun16-17')"></button></td>
+      <td><button :style="getButtonStyle('mar16-17')" @click="checkPlanning('mar16-17')"></button></td>
+      <td><button :style="getButtonStyle('mer16-17')" @click="checkPlanning('mer16-17')"></button></td>
+      <td><button :style="getButtonStyle('jeu16-17')" @click="checkPlanning('jeu16-17')"></button></td>
+      <td><button :style="getButtonStyle('ven16-17')" @click="checkPlanning('ven16-17')"></button></td>
+      <td><button :style="getButtonStyle('sam16-17')" @click="checkPlanning('sam16-17')"></button></td>
+      <td><button :style="getButtonStyle('dim16-17')" @click="checkPlanning('dim16-17')"></button></td>
+    </tr>
+    <tr>
+      <td>17:00 - 18:00</td>
+      <td><button :style="getButtonStyle('lun17-18')" @click="checkPlanning('lun17-18')"></button></td>
+      <td><button :style="getButtonStyle('mar17-18')" @click="checkPlanning('mar17-18')"></button></td>
+      <td><button :style="getButtonStyle('mer17-18')" @click="checkPlanning('mer17-18')"></button></td>
+      <td><button :style="getButtonStyle('jeu17-18')" @click="checkPlanning('jeu17-18')"></button></td>
+      <td><button :style="getButtonStyle('ven17-18')" @click="checkPlanning('ven17-18')"></button></td>
+      <td><button :style="getButtonStyle('sam17-18')" @click="checkPlanning('sam17-18')"></button></td>
+      <td><button :style="getButtonStyle('dim17-18')" @click="checkPlanning('dim17-18')"></button></td>
+    </tr>
           </tbody>
         </table>
       </div>
@@ -413,6 +420,7 @@ export default {
 </template>
 
 <style scoped>
+
   .sidebar{
     max-width: 400px;
   }
