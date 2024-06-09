@@ -42,6 +42,9 @@ app.use('/api/gettitlegroupe', gettitlegroupe);
 const membreGroupe = require('./routes/groupe/membregroupe');
 app.use('/api/membregroupe', membreGroupe);
 
+const checkPlanning = require('./routes/planning/checkplanning');
+app.use('/api/checkplanning', checkPlanning);
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
