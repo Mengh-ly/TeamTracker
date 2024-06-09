@@ -20,8 +20,8 @@ router.post('/', (req, res) => {
         const userId = results[0].id;
 
         // Maintenant, nous pouvons insérer un nouvel enregistrement dans la table planning
-        const addPlanningQuery = 'INSERT INTO planning (id_User, id_Planning) VALUES (?, ?)';
-        db.query(addPlanningQuery, [userId, idPlanning], (err, results) => {
+        const addPlanningQuery = 'INSERT INTO planning (id, id_User) VALUES (?, ?)';
+        db.query(addPlanningQuery, [idPlanning, userId], (err, results) => {
             if (err) {
                 console.error(err);
                 return res.status(500).json({ error: 'Erreur lors de l\'ajout du planning.' });

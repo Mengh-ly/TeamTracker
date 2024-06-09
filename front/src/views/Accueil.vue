@@ -22,7 +22,8 @@ export default {
       isLeader: false,
       title: '',
       groupId: null, // Id du groupe actuel de l'utilisateur
-      membersInGroup: []
+      membersInGroup: [],
+      planningData: []
     }
   },
   methods: {
@@ -74,7 +75,32 @@ export default {
       }
     },
 
+    async checkPlanning(idPlanning) {
+      try {
+          token,
+          idPlanning
+        });
+        console.log('Response from checkplanning:', response.data);
 
+        // Mettre à jour les données de planning
+        this.planningData = response.data;
+
+        // Appeler la méthode pour mettre à jour les classes des boutons
+        this.updateButtonClasses();
+      } catch (error) {
+        console.error('Error checking planning:', error);
+      }
+    },
+
+    hasPlanning(id) {
+      // Vérifier si l'ID est présent dans planningData
+      return this.planningData.some(item => item.id === id);
+    },
+
+    updateButtonClasses() {
+      // Mettre à jour les classes des boutons
+      // Vous n'avez pas besoin de faire quelque chose ici directement si vous utilisez :class dans le template
+    },
 
     async quitterGroupe() {
       try {
@@ -165,6 +191,23 @@ export default {
         console.error('Error deleting group:', error);
       }
     },
+
+    async checkPlanning(idPlanning) {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.post('http://localhost:3001/api/checkplanning', {
+          token,
+          idPlanning
+        });
+        console.log('Response from checkplanning:', response.data);
+
+        // Faites quelque chose avec la réponse si nécessaire
+      } catch (error) {
+        console.error('Error checking planning:', error);
+      }
+    },
+
+
     async fetchMemberGroupeData() {
       try {
         const token = localStorage.getItem('token');
@@ -200,6 +243,7 @@ export default {
     this.fetchUserData();
     this.checkLeader();
     this.fetchMemberGroupeData();
+    this.getPlanning();
   }
 }
 </script>
@@ -280,103 +324,103 @@ export default {
           <tbody>
           <tr>
             <td>08:00 - 09:00</td>
-            <td><button id="lun08-09"></button></td>
-            <td><button id="mar08-09"></button></td>
-            <td><button id="mer08-09"></button></td>
-            <td><button id="jeu08-09"></button></td>
-            <td><button id="ven08-09"></button></td>
-            <td><button id="sam08-09"></button></td>
-            <td><button id="dim08-09"></button></td>
+            <td><button :class="{ 'bg-emerald-500': hasPlanning('lun08-09') }" @click="checkPlanning('lun08-09')"></button></td>
+            <td><button :class="{ 'bg-emerald-500': hasPlanning('mar08-09') }" @click="checkPlanning('mar08-09')"></button></td>
+            <td><button :class="{ 'bg-emerald-500': hasPlanning('mer08-09') }" @click="checkPlanning('mer08-09')"></button></td>
+            <td><button :class="{ 'bg-emerald-500': hasPlanning('jeu08-09') }" @click="checkPlanning('jeu08-09')"></button></td>
+            <td><button :class="{ 'bg-emerald-500': hasPlanning('ven08-09') }" @click="checkPlanning('ven08-09')"></button></td>
+            <td><button :class="{ 'bg-emerald-500': hasPlanning('sam08-09') }" @click="checkPlanning('sam08-09')"></button></td>
+            <td><button :class="{ 'bg-emerald-500': hasPlanning('dim08-09') }" @click="checkPlanning('dim08-09')"></button></td>
           </tr>
           <tr>
             <td>09:00 - 10:00</td>
-            <td><button id="lun09-10"></button></td>
-            <td><button id="mar09-10"></button></td>
-            <td><button id="mer09-10"></button></td>
-            <td><button id="jeu09-10"></button></td>
-            <td><button id="ven09-10"></button></td>
-            <td><button id="sam09-10"></button></td>
-            <td><button id="dim09-10"></button></td>
+            <td><button @click="checkPlanning('lun09-10')"></button></td>
+            <td><button @click="checkPlanning('mar09-10')"></button></td>
+            <td><button @click="checkPlanning('mer09-10')"></button></td>
+            <td><button @click="checkPlanning('jeu09-10')"></button></td>
+            <td><button @click="checkPlanning('ven09-10')"></button></td>
+            <td><button @click="checkPlanning('sam09-10')"></button></td>
+            <td><button @click="checkPlanning('dim09-10')"></button></td>
           </tr>
           <tr>
             <td>10:00 - 11:00</td>
-            <td><button id="lun10-11"></button></td>
-            <td><button id="mar10-11"></button></td>
-            <td><button id="mer10-11"></button></td>
-            <td><button id="jeu10-11"></button></td>
-            <td><button id="ven10-11"></button></td>
-            <td><button id="sam10-11"></button></td>
-            <td><button id="dim10-11"></button></td>
+            <td><button @click="checkPlanning('lun10-11')"></button></td>
+            <td><button @click="checkPlanning('mar10-11')"></button></td>
+            <td><button @click="checkPlanning('mer10-11')"></button></td>
+            <td><button @click="checkPlanning('jeu10-11')"></button></td>
+            <td><button @click="checkPlanning('ven10-11')"></button></td>
+            <td><button @click="checkPlanning('sam10-11')"></button></td>
+            <td><button @click="checkPlanning('dim10-11')"></button></td>
           </tr>
           <tr>
             <td>11:00 - 12:00</td>
-            <td><button id="lun11-12"></button></td>
-            <td><button id="mar11-12"></button></td>
-            <td><button id="mer11-12"></button></td>
-            <td><button id="jeu11-12"></button></td>
-            <td><button id="ven11-12"></button></td>
-            <td><button id="sam11-12"></button></td>
-            <td><button id="dim11-12"></button></td>
+            <td><button @click="checkPlanning('lun11-12')"></button></td>
+            <td><button @click="checkPlanning('mar11-12')"></button></td>
+            <td><button @click="checkPlanning('mer11-12')"></button></td>
+            <td><button @click="checkPlanning('jeu11-12')"></button></td>
+            <td><button @click="checkPlanning('ven11-12')"></button></td>
+            <td><button @click="checkPlanning('sam11-12')"></button></td>
+            <td><button @click="checkPlanning('dim11-12')"></button></td>
           </tr>
           <tr>
             <td>12:00 - 13:00</td>
-            <td><button id="lun12-13"></button></td>
-            <td><button id="mar12-13"></button></td>
-            <td><button id="mer12-13"></button></td>
-            <td><button id="jeu12-13"></button></td>
-            <td><button id="ven12-13"></button></td>
-            <td><button id="sam12-13"></button></td>
-            <td><button id="dim12-13"></button></td>
+            <td><button @click="checkPlanning('lun12-13')"></button></td>
+            <td><button @click="checkPlanning('mar12-13')"></button></td>
+            <td><button @click="checkPlanning('mer12-13')"></button></td>
+            <td><button @click="checkPlanning('jeu12-13')"></button></td>
+            <td><button @click="checkPlanning('ven12-13')"></button></td>
+            <td><button @click="checkPlanning('sam12-13')"></button></td>
+            <td><button @click="checkPlanning('dim12-13')"></button></td>
           </tr>
           <tr>
             <td>13:00 - 14:00</td>
-            <td><button id="lun13-14"></button></td>
-            <td><button id="mar13-14"></button></td>
-            <td><button id="mer13-14"></button></td>
-            <td><button id="jeu13-14"></button></td>
-            <td><button id="ven13-14"></button></td>
-            <td><button id="sam13-14"></button></td>
-            <td><button id="dim13-14"></button></td>
+            <td><button @click="checkPlanning('lun13-14')"></button></td>
+            <td><button @click="checkPlanning('mar13-14')"></button></td>
+            <td><button @click="checkPlanning('mer13-14')"></button></td>
+            <td><button @click="checkPlanning('jeu13-14')"></button></td>
+            <td><button @click="checkPlanning('ven13-14')"></button></td>
+            <td><button @click="checkPlanning('sam13-14')"></button></td>
+            <td><button @click="checkPlanning('dim13-14')"></button></td>
           </tr>
           <tr>
             <td>14:00 - 15:00</td>
-            <td><button id="lun14-15"></button></td>
-            <td><button id="mar14-15"></button></td>
-            <td><button id="mer14-15"></button></td>
-            <td><button id="jeu14-15"></button></td>
-            <td><button id="ven14-15"></button></td>
-            <td><button id="sam14-15"></button></td>
-            <td><button id="dim14-15"></button></td>
+            <td><button @click="checkPlanning('lun14-15')"></button></td>
+            <td><button @click="checkPlanning('mar14-15')"></button></td>
+            <td><button @click="checkPlanning('mer14-15')"></button></td>
+            <td><button @click="checkPlanning('jeu14-15')"></button></td>
+            <td><button @click="checkPlanning('ven14-15')"></button></td>
+            <td><button @click="checkPlanning('sam14-15')"></button></td>
+            <td><button @click="checkPlanning('dim14-15')"></button></td>
           </tr>
           <tr>
             <td>15:00 - 16:00</td>
-            <td><button id="lun15-16"></button></td>
-            <td><button id="mar15-16"></button></td>
-            <td><button id="mer15-16"></button></td>
-            <td><button id="jeu15-16"></button></td>
-            <td><button id="ven15-16"></button></td>
-            <td><button id="sam15-16"></button></td>
-            <td><button id="dim15-16"></button></td>
+            <td><button @click="checkPlanning('lun15-16')"></button></td>
+            <td><button @click="checkPlanning('mar15-16')"></button></td>
+            <td><button @click="checkPlanning('mer15-16')"></button></td>
+            <td><button @click="checkPlanning('jeu15-16')"></button></td>
+            <td><button @click="checkPlanning('ven15-16')"></button></td>
+            <td><button @click="checkPlanning('sam15-16')"></button></td>
+            <td><button @click="checkPlanning('dim15-16')"></button></td>
           </tr>
           <tr>
             <td>16:00 - 17:00</td>
-            <td><button id="lun16-17"></button></td>
-            <td><button id="mar16-17"></button></td>
-            <td><button id="mer16-17"></button></td>
-            <td><button id="jeu16-17"></button></td>
-            <td><button id="ven16-17"></button></td>
-            <td><button id="sam16-17"></button></td>
-            <td><button id="dim16-17"></button></td>
+            <td><button @click="checkPlanning('lun16-17')"></button></td>
+            <td><button @click="checkPlanning('mar16-17')"></button></td>
+            <td><button @click="checkPlanning('mer16-17')"></button></td>
+            <td><button @click="checkPlanning('jeu16-17')"></button></td>
+            <td><button @click="checkPlanning('ven16-17')"></button></td>
+            <td><button @click="checkPlanning('sam16-17')"></button></td>
+            <td><button @click="checkPlanning('dim16-17')"></button></td>
           </tr>
           <tr>
             <td>17:00 - 18:00</td>
-            <td><button id="lun17-18"></button></td>
-            <td><button id="mar17-18"></button></td>
-            <td><button id="mer17-18"></button></td>
-            <td><button id="jeu17-18"></button></td>
-            <td><button id="ven17-18"></button></td>
-            <td><button id="sam17-18"></button></td>
-            <td><button id="dim17-18"></button></td>
+            <td><button @click="checkPlanning('lun17-18')"></button></td>
+            <td><button @click="checkPlanning('mar17-18')"></button></td>
+            <td><button @click="checkPlanning('mer17-18')"></button></td>
+            <td><button @click="checkPlanning('jeu17-18')"></button></td>
+            <td><button @click="checkPlanning('ven17-18')"></button></td>
+            <td><button @click="checkPlanning('sam17-18')"></button></td>
+            <td><button @click="checkPlanning('dim17-18')"></button></td>
           </tr>
           </tbody>
         </table>
