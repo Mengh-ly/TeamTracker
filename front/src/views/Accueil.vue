@@ -36,35 +36,6 @@ export default {
       }
     },
 
-    async fetchMemberGroupeData() {
-      try {
-        const token = localStorage.getItem('token');
-
-        if (!token) {
-          console.error('No token found in localStorage.');
-          return;
-        }
-
-        const data = { token };
-        const url = 'http://localhost:3001/api/membregroupe';
-
-        const response = await axios.post(url, data);
-        console.log('Members in group:', response.data); // Debug: afficher les membres du groupe
-
-        // Assurez-vous que la réponse contient une propriété `members`
-        if (response.data.members) {
-          this.membersInGroup = response.data.members;
-        } else {
-          console.error('Response data does not contain members property:', response.data);
-        }
-
-      } catch (error) {
-        console.error('Error fetching member data:', error);
-      }
-    },
-
-
-
 
     //Permet de récupérer les informations de l'user et de son groupe
     async fetchUserData() {
@@ -194,6 +165,36 @@ export default {
         console.error('Error deleting group:', error);
       }
     },
+
+    async fetchMemberGroupeData() {
+      try {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+          console.error('No token found in localStorage.');
+          return;
+        }
+
+        const data = { token };
+        const url = 'http://localhost:3001/api/membregroupe';
+
+        // Réinitialisation de membersInGroup
+        this.membersInGroup = [];
+
+        const response = await axios.post(url, data);
+        console.log('Members in group:', response.data); // Debug: afficher les membres du groupe
+
+        // Assurez-vous que la réponse contient une propriété `members`
+        if (response.data.members) {
+          console.log('Members data:', response.data.members);
+          this.membersInGroup = response.data.members;
+        } else {
+          console.error('Response data does not contain members property:', response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching member data:', error);
+      }
+    },
   },
 
   mounted() {
@@ -253,11 +254,17 @@ export default {
       <div class="planning flex w-full h-full px-6 flex-col">
         <div v-if="isInGroup" class="flex w-full flex-col gap-2">
           <h1>{{ groupTitle }}</h1>
-          <div v-for="(member, index) in membersInGroup" :key="index" class="member-item flex w-full mb-8 flex-wrap gap-4">
-            <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">
-              {{ member.name.substring(0, 2).toUpperCase() }}
-            </h1>
+          <div v-if="membersInGroup && membersInGroup.length > 0">
+            <div v-for="member in membersInGroup" :key="member.id" class="member-item flex w-full mb-8 flex-wrap gap-4">
+              <h1 class="profil bg-emerald-500 p-2 rounded-full cursor-pointer">
+                {{ member.username.substring(0, 2).toUpperCase() }}
+              </h1>
+            </div>
           </div>
+          <div v-else>
+            Chargement en cours...
+          </div>
+
 
         </div>
         <table>
@@ -276,103 +283,103 @@ export default {
           <tbody>
           <tr>
             <td>08:00 - 09:00</td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
+            <td><button id="lun08-09"></button></td>
+            <td><button id="mar08-09"></button></td>
+            <td><button id="mer08-09"></button></td>
+            <td><button id="jeu08-09"></button></td>
+            <td><button id="ven08-09"></button></td>
+            <td><button id="sam08-09"></button></td>
+            <td><button id="dim08-09"></button></td>
           </tr>
           <tr>
             <td>09:00 - 10:00</td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
+            <td><button id="lun09-10"></button></td>
+            <td><button id="mar09-10"></button></td>
+            <td><button id="mer09-10"></button></td>
+            <td><button id="jeu09-10"></button></td>
+            <td><button id="ven09-10"></button></td>
+            <td><button id="sam09-10"></button></td>
+            <td><button id="dim09-10"></button></td>
           </tr>
           <tr>
             <td>10:00 - 11:00</td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
+            <td><button id="lun10-11"></button></td>
+            <td><button id="mar10-11"></button></td>
+            <td><button id="mer10-11"></button></td>
+            <td><button id="jeu10-11"></button></td>
+            <td><button id="ven10-11"></button></td>
+            <td><button id="sam10-11"></button></td>
+            <td><button id="dim10-11"></button></td>
           </tr>
           <tr>
             <td>11:00 - 12:00</td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
+            <td><button id="lun11-12"></button></td>
+            <td><button id="mar11-12"></button></td>
+            <td><button id="mer11-12"></button></td>
+            <td><button id="jeu11-12"></button></td>
+            <td><button id="ven11-12"></button></td>
+            <td><button id="sam11-12"></button></td>
+            <td><button id="dim11-12"></button></td>
           </tr>
           <tr>
             <td>12:00 - 13:00</td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
+            <td><button id="lun12-13"></button></td>
+            <td><button id="mar12-13"></button></td>
+            <td><button id="mer12-13"></button></td>
+            <td><button id="jeu12-13"></button></td>
+            <td><button id="ven12-13"></button></td>
+            <td><button id="sam12-13"></button></td>
+            <td><button id="dim12-13"></button></td>
           </tr>
           <tr>
             <td>13:00 - 14:00</td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
+            <td><button id="lun13-14"></button></td>
+            <td><button id="mar13-14"></button></td>
+            <td><button id="mer13-14"></button></td>
+            <td><button id="jeu13-14"></button></td>
+            <td><button id="ven13-14"></button></td>
+            <td><button id="sam13-14"></button></td>
+            <td><button id="dim13-14"></button></td>
           </tr>
           <tr>
             <td>14:00 - 15:00</td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
+            <td><button id="lun14-15"></button></td>
+            <td><button id="mar14-15"></button></td>
+            <td><button id="mer14-15"></button></td>
+            <td><button id="jeu14-15"></button></td>
+            <td><button id="ven14-15"></button></td>
+            <td><button id="sam14-15"></button></td>
+            <td><button id="dim14-15"></button></td>
           </tr>
           <tr>
             <td>15:00 - 16:00</td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
+            <td><button id="lun15-16"></button></td>
+            <td><button id="mar15-16"></button></td>
+            <td><button id="mer15-16"></button></td>
+            <td><button id="jeu15-16"></button></td>
+            <td><button id="ven15-16"></button></td>
+            <td><button id="sam15-16"></button></td>
+            <td><button id="dim15-16"></button></td>
           </tr>
           <tr>
             <td>16:00 - 17:00</td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
+            <td><button id="lun16-17"></button></td>
+            <td><button id="mar16-17"></button></td>
+            <td><button id="mer16-17"></button></td>
+            <td><button id="jeu16-17"></button></td>
+            <td><button id="ven16-17"></button></td>
+            <td><button id="sam16-17"></button></td>
+            <td><button id="dim16-17"></button></td>
           </tr>
           <tr>
             <td>17:00 - 18:00</td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
-            <td><button></button></td>
+            <td><button id="lun17-18"></button></td>
+            <td><button id="mar17-18"></button></td>
+            <td><button id="mer17-18"></button></td>
+            <td><button id="jeu17-18"></button></td>
+            <td><button id="ven17-18"></button></td>
+            <td><button id="sam17-18"></button></td>
+            <td><button id="dim17-18"></button></td>
           </tr>
           </tbody>
         </table>
